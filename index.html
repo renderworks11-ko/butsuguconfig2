@@ -2,152 +2,108 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>仏具切り替えシミュレーター</title>
+    <title>仏具配置シミュレーター</title>
     <style>
         body {
-            font-family: "Helvetica Neue", Arial, sans-serif;
+            font-family: sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             background-color: #f0f0f0;
-            padding: 40px;
-            margin: 0;
+            padding: 20px;
         }
 
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        /* 仏壇と具足を重ねるメインコンテナ */
         .stage {
             position: relative;
-            width: 700px; /* 仏壇画像に合わせて調整 */
-            height: 700px; /* 仏壇画像に合わせて調整 */
+            width: 700px; 
+            height: 700px;
             background-color: #fff;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
-        /* 仏壇（背景） */
         .butsudan {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            display: block;
         }
 
-        /* 具足レイヤーの共通設定 */
         .gusoku-layer {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            transition: opacity 0.3s ease; /* 切り替え時のフェード効果 */
-            opacity: 0; /* 最初は非表示 */
-            display: none; /* 最初は非表示 */
-            pointer-events: none; /* 画像が操作の邪魔をしないようにする */
+            display: none; /* 基本は非表示 */
+            pointer-events: none;
         }
 
-        /* 表示状態のクラス */
         .active {
-            opacity: 1;
-            display: block;
+            display: block; /* activeクラスがついたものだけ表示 */
         }
 
-        /* 【調整ポイント】後段（茶湯器・仏飯器）の位置 */
+        /* 後段の位置調整 */
         .back-set {
-            bottom: 43%; /* 下からの位置：仏壇の上の段に合わせる */
-            width: 170px; /* セット全体の幅 */
+            bottom: 43%; 
+            width: 170px;
             z-index: 10;
-            filter: brightness(0.9); /* 少し暗くして奥行きを出す */
-            transform: translateX(-50%) scale(0.9); /* 遠近感を出すために少し縮小 */
+            transform: translateX(-50%) scale(0.9);
+            filter: brightness(0.9);
         }
 
-        /* 【調整ポイント】前段（花立・香炉・火立）の位置 */
+        /* 前段の位置調整 */
         .front-set {
-            bottom: 31%; /* 下からの位置：仏壇の下の段に合わせる */
-            width: 320px; /* セット全体の幅 */
+            bottom: 31%; 
+            width: 320px;
             z-index: 20;
-            transform: translateX(-50%) scale(1.0);
         }
 
-        /* コントロールパネル（ボタンエリア） */
         .controls {
-            margin-top: 30px;
+            margin-top: 20px;
             display: flex;
-            gap: 15px;
+            gap: 10px;
         }
 
         button {
-            padding: 12px 24px;
-            font-size: 16px;
+            padding: 10px 20px;
             cursor: pointer;
-            background-color: #fff;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            transition: all 0.2s;
-            outline: none;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background: #fff;
         }
 
-        button:hover {
-            border-color: #aaa;
-            background-color: #f9f9f9;
-        }
-
-        /* 選択中のボタンのスタイル */
         button.selected {
-            border-color: #d81b60; /* ピンク系 */
-            background-color: #fce4ec;
-            color: #d81b60;
-            font-weight: bold;
+            background-color: #333;
+            color: #fff;
         }
-
-        button.selected.blue-btn {
-            border-color: #1e88e5; /* ブルー系 */
-            background-color: #e3f2fd;
-            color: #1e88e5;
-        }
-
     </style>
 </head>
 <body>
 
-    <h1>仏具配置シミュレーター</h1>
-    <p>下のボタンで仏具のセットを切り替えられます。</p>
-
     <div class="stage">
-        <img src="image_10.png" alt="仏壇" class="butsudan">
+        <img src="butsu22.jpg" class="butsudan">
 
-        <img src="image_12.png" id="blue-back" class="gusoku-layer back-set active">
-        <img src="image_11.png" id="blue-front" class="gusoku-layer front-set active">
+        <img src="blue_back.png" id="blue-back" class="gusoku-layer back-set active">
+        <img src="blue_front.png" id="blue-front" class="gusoku-layer front-set active">
 
-        <img src="image_13.png" id="pink-back" class="gusoku-layer back-set">
-        <img src="image_9.png" id="pink-front" class="gusoku-layer front-set">
+        <img src="pink_back.png" id="pink-back" class="gusoku-layer back-set">
+        <img src="pink_front.png" id="pink-front" class="gusoku-layer front-set">
     </div>
 
     <div class="controls">
-        <button id="btn-blue" class="blue-btn selected" onclick="changeSet('blue')">ブルーセット</button>
-        <button id="btn-pink" onclick="changeSet('pink')">ピンクセット</button>
+        <button id="btn-blue" class="selected" onclick="changeSet('blue')">ブルー</button>
+        <button id="btn-pink" onclick="changeSet('pink')">ピンク</button>
     </div>
 
     <script>
         function changeSet(color) {
-            // すべての具足レイヤーを非表示にする
-            const layers = document.querySelectorAll('.gusoku-layer');
-            layers.forEach(layer => layer.classList.remove('active'));
+            // 全画像を一旦消す
+            document.querySelectorAll('.gusoku-layer').forEach(img => img.classList.remove('active'));
+            // ボタンの選択状態を解除
+            document.querySelectorAll('button').forEach(btn => btn.classList.remove('selected'));
 
-            // すべてのボタンの選択状態を解除する
-            const buttons = document.querySelectorAll('.controls button');
-            buttons.forEach(btn => btn.classList.remove('selected'));
-
-            // 選択された色の具足レイヤーを表示する
+            // 選んだ色を表示
             document.getElementById(color + '-front').classList.add('active');
             document.getElementById(color + '-back').classList.add('active');
-
-            // 選択されたボタンを選択状態にする
+            // ボタンを黒くする
             document.getElementById('btn-' + color).classList.add('selected');
         }
     </script>
