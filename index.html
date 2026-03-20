@@ -2,111 +2,48 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>仏具配置シミュレーター</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RENDER WORKS | SOFA AR</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-        body {
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #f0f0f0;
-            padding: 20px;
-        }
-
-        .stage {
-            position: relative;
-            width: 700px; 
-            height: 700px;
-            background-color: #fff;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            overflow: hidden;
-        }
-
-        .butsudan {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .gusoku-layer {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            display: none; /* 基本は非表示 */
-            pointer-events: none;
-        }
-
-        .active {
-            display: block; /* activeクラスがついたものだけ表示 */
-        }
-
-        /* 後段の位置調整 */
-        .back-set {
-            bottom: 43%; 
-            width: 170px;
-            z-index: 10;
-            transform: translateX(-50%) scale(0.9);
-            filter: brightness(0.9);
-        }
-
-        /* 前段の位置調整 */
-        .front-set {
-            bottom: 31%; 
-            width: 320px;
-            z-index: 20;
-        }
-
-        .controls {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-        }
-
-        button {
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            background: #fff;
-        }
-
-        button.selected {
-            background-color: #333;
-            color: #fff;
-        }
+        body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; background-color: #fff; }
+        model-viewer { width: 100%; height: 70vh; background-color: #f5f5f5; }
+        .ui-container { padding: 30px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .color-title { font-size: 12px; letter-spacing: 0.1em; color: #888; margin-bottom: 5px; }
+        .controls { display: flex; gap: 30px; }
+        .color-option { display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 8px; }
+        .swatch { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #ddd; }
+        /* 選択中のボタンを強調 */
+        .active { border: 2px solid #333; transform: scale(1.1); }
+        .green-bg { background-color: #4f7942; }
+        .white-bg { background-color: #f5f5f5; }
+        .label { font-size: 10px; font-weight: bold; color: #333; }
+        #ar-button { background-color: white; border-radius: 20px; border: 1px solid #333; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 10px 25px; font-size: 13px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
-    <div class="stage">
-        <img src="butsu22.jpg" class="butsudan">
+    <model-viewer 
+        src="sofagreen.glb" 
+        ios-src="sofagreen.usdz"
+        ar ar-modes="webxr quick-look scene-viewer" 
+        camera-controls shadow-intensity="1" environment-image="neutral" exposure="1">
+        <button slot="ar-button" id="ar-button">VIEW IN AR</button>
+    </model-viewer>
 
-        <img src="blue_back.png" id="blue-back" class="gusoku-layer back-set active">
-        <img src="blue_front.png" id="blue-front" class="gusoku-layer front-set active">
-
-        <img src="pink_back.png" id="pink-back" class="gusoku-layer back-set">
-        <img src="pink_front.png" id="pink-front" class="gusoku-layer front-set">
+    <div class="ui-container">
+        <div class="color-title">SELECT MATERIAL</div>
+        <div class="controls">
+            <div class="color-option" onclick="location.href='index.html'">
+                <div class="swatch green-bg active"></div>
+                <span class="label">GREEN</span>
+            </div>
+            <div class="color-option" onclick="location.href='white.html'">
+                <div class="swatch white-bg"></div>
+                <span class="label">WHITE</span>
+            </div>
+        </div>
     </div>
-
-    <div class="controls">
-        <button id="btn-blue" class="selected" onclick="changeSet('blue')">ブルー</button>
-        <button id="btn-pink" onclick="changeSet('pink')">ピンク</button>
-    </div>
-
-    <script>
-        function changeSet(color) {
-            // 全画像を一旦消す
-            document.querySelectorAll('.gusoku-layer').forEach(img => img.classList.remove('active'));
-            // ボタンの選択状態を解除
-            document.querySelectorAll('button').forEach(btn => btn.classList.remove('selected'));
-
-            // 選んだ色を表示
-            document.getElementById(color + '-front').classList.add('active');
-            document.getElementById(color + '-back').classList.add('active');
-            // ボタンを黒くする
-            document.getElementById('btn-' + color).classList.add('selected');
-        }
-    </script>
 
 </body>
 </html>
